@@ -6,13 +6,20 @@ namespace CheckoutKata.Tests
     [TestFixture]
     public class TillTests
     {
-        Till _till;
+        private Till _till;
+        private IEnumerable<Item> _existingShopItems;
 
-        public TillTests()
+        [OneTimeSetUp]
+        public void SetUpExistingShopItems()
         {
-            var existingShopItems = CreateExistingShopItems();
+            _existingShopItems = CreateExistingShopItems();
+            
+        }
 
-            _till = new Till(existingShopItems);
+        [SetUp]
+        public void TillTestsSetup()
+        {
+            _till = new Till(_existingShopItems);
         }
 
         [Test]
@@ -23,6 +30,23 @@ namespace CheckoutKata.Tests
 
             // Act
             _till.Scan(nullItem);
+
+            // Assert
+            Assert.That(_till._scannedItems.Count(), Is.EqualTo(0));
+        }
+
+        [Test]
+        public void Scan_NonExistingShopItem_ShouldReturnZeroItemsScanned()
+        {
+            // Arrange
+            var fakeItem = new Item
+            {
+                StockKeepingUnit = 'Z',
+                UnitPrice = 100
+            };
+
+            // Act
+            _till.Scan(fakeItem);
 
             // Assert
             Assert.That(_till._scannedItems.Count(), Is.EqualTo(0));
