@@ -23,10 +23,15 @@ namespace CheckoutKata
 
         public void Scan(Item item)
         {
-            if (item is not null)
+            if (item is not null && CheckItemExistsInTheShop(item))
             {
                 _scannedItems.Add(item);
             }
+        }
+
+        private bool CheckItemExistsInTheShop(Item item)
+        {
+            return _existingShopItems.Contains(item);
         }
     }
 }
