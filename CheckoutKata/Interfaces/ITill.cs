@@ -1,8 +1,10 @@
-﻿namespace CheckoutKata.Interfaces
+﻿using CheckoutKata.Models;
+
+namespace CheckoutKata.Interfaces
 {
     public interface ITill
     {
-        void Scan(string item);
+        void Scan(Item item);
 
         int GetTotalPrice();
     }
