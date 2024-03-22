@@ -22,34 +22,47 @@ namespace CheckoutKata.Tests
             _till = new Till(_existingShopItems);
         }
 
-        [Test]
-        public void Scan_NullShopItem_ShouldReturnZeroItemsScanned()
+        [TestCase("A", 1)]
+        [TestCase("AAA", 3)]
+        [TestCase("ABC", 3)]
+        [TestCase("ABCCBA", 6)]
+        [TestCase("DCBAABCD", 8)]
+        public void Scan_ExistingShopItems_ShouldReturnTheCorrectCountOfItemsScanned(string items, int expectedScannedCount)
         {
             // Arrange
-            Item nullItem = null;
+            var stockKeepingUnits = items.ToCharArray();
 
             // Act
-            _till.Scan(nullItem);
+            foreach(var stockKeepingUnit in stockKeepingUnits)
+            {
+                _till.Scan(stockKeepingUnit);
+            }
+
+            var totalItemsScanned = _till._scannedItems.Sum(x => x.Value.count.ScannedCount);
 
             // Assert
-            Assert.That(_till._scannedItems.Count(), Is.EqualTo(0));
+            Assert.That(totalItemsScanned, Is.EqualTo(expectedScannedCount));
         }
 
-        [Test]
-        public void Scan_NonExistingShopItem_ShouldReturnZeroItemsScanned()
+        [TestCase("Z", 0)]
+        [TestCase("ZZZ", 0)]
+        [TestCase("ABCZZZ", 3)]
+        [TestCase("ZBZAZCZD", 4)]
+        public void Scan_ExistingAndNonExistingShopItems_ShouldReturnTheCorrectCountOfItemsScanned(string items, int expectedScannedCount)
         {
             // Arrange
-            var fakeItem = new Item
-            {
-                StockKeepingUnit = 'Z',
-                UnitPrice = 100
-            };
+            var stockKeepingUnits = items.ToCharArray();
 
             // Act
-            _till.Scan(fakeItem);
+            foreach(var stockKeepingUnit in stockKeepingUnits)
+            {
+                _till.Scan(stockKeepingUnit);
+            }
+
+            var totalItemsScanned = _till._scannedItems.Sum(x => x.Value.count.ScannedCount);
 
             // Assert
-            Assert.That(_till._scannedItems.Count(), Is.EqualTo(0));
+            Assert.That(totalItemsScanned, Is.EqualTo(expectedScannedCount));
         }
 
         private List<Item> CreateExistingShopItems()
