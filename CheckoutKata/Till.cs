@@ -5,15 +5,15 @@ namespace CheckoutKata
 {
     public class Till : ITill
     {
-        private IEnumerable<Item> _existingShopItems;
+        public Dictionary<char, (Item item, ItemTracker count)> _scannedItems;
 
-        public List<Item> _scannedItems;
+        private IEnumerable<Item> _existingShopItems;
 
         public Till(IEnumerable<Item> existingShopItems)
         {
-            _existingShopItems = existingShopItems;
+            _scannedItems = new Dictionary<char, (Item item, ItemTracker count)>();
 
-            _scannedItems = new List<Item>();
+            _existingShopItems = existingShopItems;
         }
 
         public int GetTotalPrice()
@@ -21,17 +21,27 @@ namespace CheckoutKata
             throw new NotImplementedException();
         }
 
-        public void Scan(Item item)
+        public void Scan(char item)
         {
-            if (item is not null && CheckItemExistsInTheShop(item))
+            if (CheckItemExistsInTheShop(item))
             {
-                _scannedItems.Add(item);
+                if (_scannedItems.ContainsKey(item))
+                {
+                    _scannedItems[item].count.ScannedCount++;
+                }
+                else
+                {
+                    var itemToAdd = _existingShopItems.First(x => x.StockKeepingUnit == item);
+                    var itemScannedCount = new ItemTracker { ScannedCount = 1 };
+
+                    _scannedItems.Add(item, (itemToAdd, itemScannedCount));
+                }
             }
         }
 
-        private bool CheckItemExistsInTheShop(Item item)
+        private bool CheckItemExistsInTheShop(char item)
         {
-            return _existingShopItems.Contains(item);
+            return _existingShopItems.Any(x => x.StockKeepingUnit == item);
         }
     }
 }

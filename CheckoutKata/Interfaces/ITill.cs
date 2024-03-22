@@ -4,7 +4,7 @@ namespace CheckoutKata.Interfaces
 {
     public interface ITill
     {
-        void Scan(Item item);
+        void Scan(char item);
 
         int GetTotalPrice();
     }
