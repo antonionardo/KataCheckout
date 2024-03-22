@@ -8,17 +8,41 @@ namespace CheckoutKata
         public Dictionary<char, (Item item, ItemTracker count)> _scannedItems;
 
         private IEnumerable<Item> _existingShopItems;
+        private IEnumerable<SpecialOffer> _existingSpecialOffers;
 
-        public Till(IEnumerable<Item> existingShopItems)
+        public Till(IEnumerable<Item> existingShopItems, IEnumerable<SpecialOffer> specialOffers)
         {
             _scannedItems = new Dictionary<char, (Item item, ItemTracker count)>();
 
             _existingShopItems = existingShopItems;
+            _existingSpecialOffers = specialOffers;
         }
 
         public int GetTotalPrice()
         {
-            throw new NotImplementedException();
+            var totalPrice = 0;
+
+            foreach(var shopItem in _scannedItems.Values)
+            {
+                var itemQuantity = shopItem.count.ScannedCount;
+                var itemFullPrice = shopItem.item.UnitPrice;
+                var specialOffer = _existingSpecialOffers.FirstOrDefault(x => x.StockKeepingUnit == shopItem.item.StockKeepingUnit);
+
+                if (specialOffer is not null)
+                {
+                    var discountedItems = itemQuantity / specialOffer.QuantityNeeded;
+                    var fullPriceItems = itemQuantity % specialOffer.QuantityNeeded;
+
+                    totalPrice += discountedItems * specialOffer.SpecialPrice;
+                    totalPrice += fullPriceItems * itemFullPrice;
+                }
+                else
+                {
+                    totalPrice += itemQuantity * itemFullPrice;
+                }
+            }
+
+            return totalPrice;
         }
 
         public void Scan(char item)

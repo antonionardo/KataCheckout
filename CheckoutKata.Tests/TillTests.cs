@@ -20,7 +20,7 @@ namespace CheckoutKata.Tests
         [SetUp]
         public void TillTestsSetup()
         {
-            _till = new Till(_existingShopItems);
+            _till = new Till(_existingShopItems, _specialPriceOffers);
         }
 
         [TestCase("A", 1)]
