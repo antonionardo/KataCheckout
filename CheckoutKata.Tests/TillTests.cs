@@ -81,6 +81,49 @@ namespace CheckoutKata.Tests
             Assert.That(totalPrice, Is.EqualTo(expectedTotalPrice));
         }
 
+        [TestCase("AAA", 130)]
+        [TestCase("BB", 45)]
+        public void GetTotalPrice_SpecialOfferItems_ShouldReturnTheCorrectTotalPrice(string items, int expectedTotalPrice)
+        {
+            // Arrange
+            var stockKeepingUnits = items.ToCharArray();
+
+            // Act
+            foreach (var stockKeepingUnit in stockKeepingUnits)
+            {
+                _till.Scan(stockKeepingUnit);
+            }
+
+            var totalPrice = _till.GetTotalPrice();
+
+            // Assert
+            Assert.That(totalPrice, Is.EqualTo(expectedTotalPrice));
+        }
+        
+        [TestCase("ABCD", 115)]
+        [TestCase("DCBA", 115)]
+        [TestCase("ZABZCDZ", 115)]
+        [TestCase("ABABA", 175)]
+        [TestCase("ABABABA", 255)]
+        [TestCase("ZDBCAAB", 180)]
+        [TestCase("ZDBCAAAB", 210)]
+        public void GetTotalPrice_MultipleItemsBothWithAndWithoutOffers_ShouldReturnTheCorrectTotalPrice(string items, int expectedTotalPrice)
+        {
+            // Arrange
+            var stockKeepingUnits = items.ToCharArray();
+
+            // Act
+            foreach (var stockKeepingUnit in stockKeepingUnits)
+            {
+                _till.Scan(stockKeepingUnit);
+            }
+
+            var totalPrice = _till.GetTotalPrice();
+
+            // Assert
+            Assert.That(totalPrice, Is.EqualTo(expectedTotalPrice));
+        }
+
         private List<SpecialOffer> CreateSpecialPriceOffers()
         {
             return new List<SpecialOffer>
