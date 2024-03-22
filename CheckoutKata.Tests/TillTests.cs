@@ -8,12 +8,13 @@ namespace CheckoutKata.Tests
     {
         private Till _till;
         private IEnumerable<Item> _existingShopItems;
+        private IEnumerable<SpecialOffer> _specialPriceOffers;
 
         [OneTimeSetUp]
         public void SetUpExistingShopItems()
         {
             _existingShopItems = CreateExistingShopItems();
-            
+            _specialPriceOffers = CreateSpecialPriceOffers();
         }
 
         [SetUp]
@@ -63,6 +64,40 @@ namespace CheckoutKata.Tests
 
             // Assert
             Assert.That(totalItemsScanned, Is.EqualTo(expectedScannedCount));
+        }
+
+        [TestCase('A', 50)]
+        [TestCase('B', 30)]
+        [TestCase('C', 20)]
+        [TestCase('D', 15)]
+        public void GetTotalPrice_SingleShopItem_ShouldReturnTheCorrectTotalPrice(char item, int expectedTotalPrice)
+        {
+            // Act
+            _till.Scan(item);
+
+            var totalPrice = _till.GetTotalPrice();
+
+            // Assert
+            Assert.That(totalPrice, Is.EqualTo(expectedTotalPrice));
+        }
+
+        private List<SpecialOffer> CreateSpecialPriceOffers()
+        {
+            return new List<SpecialOffer>
+            {
+                new SpecialOffer
+                {
+                    StockKeepingUnit = 'A',
+                    SpecialPrice = 130,
+                    QuantityNeeded = 3
+                },
+                new SpecialOffer
+                {
+                    StockKeepingUnit = 'B',
+                    SpecialPrice = 45,
+                    QuantityNeeded = 2
+                },
+            };
         }
 
         private List<Item> CreateExistingShopItems()
